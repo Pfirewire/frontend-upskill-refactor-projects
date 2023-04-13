@@ -2,16 +2,6 @@
     box-sizing: border-box;
 }
 
-table {
-    border-collapse: collapse;
-    margin: 15px 0;
-}
-
-td, th {
-    border: 1px solid black;
-    padding: 5px 10px;
-}
-
 #coffees {
     width: 100%;
     display: flex;
