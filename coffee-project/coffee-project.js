@@ -1,47 +1,11 @@
 "use strict"
 
-function renderCoffee(coffee) {
+// Page Element Variables
+const coffeesContainer = document.querySelector('#coffees');
+const roastSelection = document.querySelector('#roast-selection');
+const coffeeSearch = document.querySelector('#coffee-search');
 
-    let html = `
-        <div class="coffee" data-coffee-id="${coffee.id}">
-            <div class="coffee-header">
-                <div>${coffee.name}</div>
-            </div>
-            <div class="coffee-body">
-                <div>${coffee.roast}</div>
-            </div>
-        </div>
-    `;
-
-    return html;
-}
-
-function renderCoffees(coffees) {
-    let html = '';
-    for(let i = 0; i < coffees.length; i++) {
-        html += renderCoffee(coffees[i]);
-    }
-    return html;
-}
-
-function updateCoffees(e) {
-    e.preventDefault();
-    let selectedRoast = roastSelection.value;
-    console.log(selectedRoast);
-    if(selectedRoast === 'all') {
-        coffeesContainer.innerHTML = renderCoffees(coffees);
-        return;
-    }
-    let filteredCoffees = [];
-    coffees.forEach(function(coffee) {
-        if (coffee.roast === selectedRoast) {
-            filteredCoffees.push(coffee);
-        }
-    });
-    coffeesContainer.innerHTML = renderCoffees(filteredCoffees);
-}
-
-// from http://www.ncausa.org/About-Coffee/Coffee-Roasts-Guide
+// Initial Coffees list
 let coffees = [
     {id: 1, name: 'Light City', roast: 'light'},
     {id: 2, name: 'Half City', roast: 'light'},
@@ -59,9 +23,60 @@ let coffees = [
     {id: 14, name: 'French', roast: 'dark'},
 ];
 
-let coffeesContainer = document.querySelector('#coffees');
-let roastSelection = document.querySelector('#roast-selection');
-
+// Initial rendering of coffees with full list
 coffeesContainer.innerHTML = renderCoffees(coffees);
 
+// Event listeners
 roastSelection.addEventListener('change', updateCoffees);
+coffeeSearch.addEventListener('keyup', updateCoffees);
+
+
+//------------------------------------------------ Methods ------------------------------------------------
+function renderCoffee(coffee) {
+    return `
+        <div class="coffee" data-coffee-id="${coffee.id}">
+            <div class="coffee-header">
+                <div>${coffee.name}</div>
+            </div>
+            <div class="coffee-body">
+                <div>${coffee.roast}</div>
+            </div>
+        </div>
+    `;
+}
+
+function renderCoffees(coffees) {
+    let html = '';
+    for(let i = 0; i < coffees.length; i++) {
+        html += renderCoffee(coffees[i]);
+    }
+    return html;
+}
+
+function filterByRoast(roast) {
+    let coffeeList = [];
+    coffees.forEach(function(coffee) {
+        if (coffee.roast === roast || roast === 'all') {
+            coffeeList.push(coffee);
+        }
+    });
+    return coffeeList;
+}
+
+function filterBySearch(search, coffeeList) {
+    let filteredList = [];
+    coffeeList.forEach(function(coffee) {
+        if(coffee.name.toLowerCase().includes(search.toLowerCase())) {
+            filteredList.push(coffee);
+        }
+    });
+    return filteredList;
+}
+
+function updateCoffees(e) {
+    e.preventDefault();
+    let selectedRoast = roastSelection.value;
+    let searchQuery = coffeeSearch.value;
+    let filteredCoffees = filterBySearch(searchQuery, filterByRoast(selectedRoast));
+    coffeesContainer.innerHTML = renderCoffees(filteredCoffees);
+}
